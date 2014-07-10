@@ -7,8 +7,9 @@ A helper make your webpage adapt various of mobile phone automatically, enjoy it
 
 - 基于设计稿尺寸在PC端做好页面
 - 引入iMoible.js即可
+- 如果要兼容firefoxMobile，请给bodoy设置如下样式(它不支持target-densitydpi，所以只能使用scale缩放了)：
 
-btw：可用参考iMobile.htm中的代码
+    body {position:absolute;left:0px;top:0px;width:100%;height:2000px;overflow:hidden;-webkit-transform-origin:0 0;}
 
 ###原理
 
