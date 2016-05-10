@@ -5,6 +5,9 @@ var player = cc.Layer.extend({
         var bg = cc.LayerColor.create(cc.color('#009900'), 100, 100);
         this.addChild(bg,0);
     }
+    ,attack: function () {
+        cc.log('attack')
+    }
 });
 
 var MyScene = cc.Scene.extend({
@@ -15,6 +18,8 @@ var MyScene = cc.Scene.extend({
         var p = new player();
         p.setPosition(0, 200);
         this.addChild(p, 3 );
+        p.attack();
+
 
         //cc.color ~~ new cc.Color
         var bg = cc.LayerColor.create(cc.color('#ff9900'), size.width, size.height);
