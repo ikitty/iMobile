@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<meta name="format-detection" content="telephone=no" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black" />
+<meta name="robots" content="all" />
+<meta name="author" content="Tencent-TGideas" />
+<meta name="Copyright" content="Tencent" />
+<meta name="Keywords" content="刀锋铁骑,T7,铁骑激活码,刀锋铁骑官网,刀锋铁骑下载,刀锋铁骑官方下载,iron knight" />
+<meta name="Description" content="《刀锋铁骑》是由腾讯知名工作室北极光自主研发的大型冷兵器战争网游，旨在还原真实的中国冷兵器时代，由中、美、法、德、爱5国团队联袂打造，战争美学新网游，马上开战！" />
+<link rel="stylesheet" href="style.css" type="text/css" media="screen" />
+<title>-刀锋铁骑官方网站-腾讯游戏</title>
+</head>
+<body>   
+<canvas id="gameCanvas" width="414" height="736"></canvas>
+
+<script src="cocos2d-js-v3.10-lite.js" charset="UTF-8"></script>
+<script src="main.js"></script>
+<script type="text/javascript">
+      window.onload = function(){
+          cc.game.onStart = function(){
+              cc.LoaderScene.preload(["coach.png"], function () {
+                  cc.director.runScene(new MyScene());
+              }, this);
+          };
+          cc.game.run("gameCanvas");
+      };
+</script>
+</body>
+</html>
