@@ -65,6 +65,8 @@ var Master = cc.Layer.extend({
         this.weapon.runAction(cc.sequence(
             cc.moveBy(1.5, dis[dir]),
             cc.callFunc(function () {
+                //-2 means Too Late
+                _this.dir = -2; 
                 _this.weapon.setVisible(0);
                 _this.weapon.setPosition(- _this.weapon.getContentSize().width/2,0);
 
@@ -205,19 +207,22 @@ var MyScene = cc.Scene.extend({
         this.addChild(master, 1 );
         master.schedule(master.update, 1, null, 0.5)
 
-        this.masterDir = -1 ;
 
         //blank node
         var calNode = cc.Node.create();
         calNode.update = function () {
             if (fish.didAttack) {
+                fish.didAttack = 0 ;
                 var masterDir = master.getAttack();
-                var fishDir = fish.getAttack();
-                
-                master.msg.setString(masterDir === fishDir);
+                if (masterDir === -2) {
+                    master.msg.setString('太迟了，骚年');
+                }else {
+                    var fishDir = fish.getAttack();
+                    master.msg.setString(masterDir === fishDir? '不错哟' : '方向都分不清吗？');
+                }
             }
         }
-        calNode.schedule(calNode.update, 0.5);
+        calNode.schedule(calNode.update, 0.1);
         this.addChild(calNode,0);
 
         //fish
