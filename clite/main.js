@@ -4,7 +4,7 @@ var alexRand = function (min, max, digit) {
 };
 
 //FSM
-var FSM = cc.LayerColor.extend({
+var FSM = cc.Node.extend({
     ctor: function (role) {
         this._super();
         if (!role) {
@@ -14,9 +14,10 @@ var FSM = cc.LayerColor.extend({
         this.role = role;
         this.schedule(this.update, 1);
     }
+    ,pause: 0
     ,lastStatus: null
     ,update: function () {
-        if (this.lastStatus === this.role.status) {
+        if (this.pause || this.lastStatus === this.role.status) {
             return  ;
         }
         this.lastStatus = this.role.status ;
@@ -30,7 +31,7 @@ var FSM = cc.LayerColor.extend({
                 this.role.attack(dirs[alexRand(0,4)]);
                 break;
             case 'done':
-                this.role.showTaunt();
+                this.role.showRet();
                 break;
             case 'doneAll':
                 this.role.doneAll();
@@ -85,7 +86,10 @@ var Master = cc.Layer.extend({
                 _this.weapon.setVisible(0);
                 _this.weapon.setPosition(- _this.weapon.getContentSize().width/2,0);
 
-                this.status = this.count >=10 ?'doneAll' : 'done';
+                _this.scheduleOnce(function () {
+                    this.status = this.count >=10 ?'doneAll' : 'done';
+                }, 1)
+
             }, this)
         ) ) ;
     }
@@ -103,8 +107,8 @@ var Master = cc.Layer.extend({
             this.status = 'attack'
         }, 1);
     }
-    ,showTaunt: function () {
-        this.msg.setString('我要进行下一次进攻了~')
+    ,showRet: function (ret) {
+        this.msg.setString(ret || '再接再厉');
         this.scheduleOnce(function () {
             this.status = 'ready'
         }, 1);
@@ -205,7 +209,6 @@ var MyScene = cc.Scene.extend({
         var fsm = new FSM(master);
         this.addChild(fsm,-1);
 
-
         //fish
         var fish = new Fish();
         fish.setPosition(size.width/2, size.height/4);
@@ -236,6 +239,8 @@ var MyScene = cc.Scene.extend({
             txtCount.setString('Count: ' + master.getCount());
 
             if (fish.didAttack) {
+                fsm.pause = 1 ;
+                
                 fish.didAttack = 0 ;
                 var masterDir = master.getAttack();
                 if (masterDir === -1) {
@@ -252,6 +257,8 @@ var MyScene = cc.Scene.extend({
                         txtScore.setString('Score: ' + (defaultScore));
                     }
                 }
+            }else {
+                fsm.pause = 0 ;
             }
         }
         calNode.schedule(calNode.update, 0.1);
