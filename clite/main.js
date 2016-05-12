@@ -266,3 +266,26 @@ var MyScene = cc.Scene.extend({
     }
 });
 
+var StartScene = cc.Scene.extend({
+    onEnter:function () {
+        this._super();
+        var size = cc.director.getWinSize();
+
+        //cc.color ~~ new cc.Color
+        var bg = cc.LayerColor.create(cc.color('#ff9900') );
+        this.addChild(bg,0);
+
+        var txt = cc.LabelTTF.create("Welcome", "Arial", 30);
+        txt.setPosition(size.width/2, size.height/2);
+        txt.setColor(cc.color('#000000'))
+        this.addChild(txt,1);
+
+        cc.eventManager.addListener(cc.EventListener.create({
+            event: cc.EventListener.TOUCH_ALL_AT_ONCE,
+            onTouchesEnded: function(touches, event){
+                cc.director.runScene(new MyScene());
+            }
+        }), txt);
+    }
+});
+
