@@ -3,6 +3,45 @@ var alexRand = function (min, max, digit) {
     return digit ? Number(r.toFixed(digit)) : (r | 0) ;
 };
 
+//FSM
+var FSM = cc.LayerColor.extend({
+    ctor: function (role) {
+        this._super();
+        if (!role) {
+            cc.log('need a object');
+            return  ;
+        }
+        this.role = role;
+        this.schedule(this.update, 1);
+    }
+    ,lastStatus: null
+    ,update: function () {
+        if (this.lastStatus === this.role.status) {
+            return  ;
+        }
+        this.lastStatus = this.role.status ;
+
+        switch(this.role.status) {
+            case 'ready':
+                this.role.showTips();
+                break;
+            case 'attack':
+                var dirs = ['Up', 'Right', 'Down', 'Left'];
+                this.role.attack(dirs[alexRand(0,4)]);
+                break;
+            case 'done':
+                this.role.showTaunt();
+                break;
+            case 'doneAll':
+                this.role.doneAll();
+                break;
+            
+            default:
+                this.role.showTips();
+        }
+    }
+});
+
 //master
 var Master = cc.Layer.extend({
     ctor: function () {
@@ -22,34 +61,9 @@ var Master = cc.Layer.extend({
         msg.setColor(cc.color('#000000'))
         this.addChild(msg,1);
         this.msg = msg ;
-
-        //this.init();
     }
-    ,init: function () {
-        var _this = this ;
-        cc.eventManager.addListener(cc.EventListener.create({
-            event: cc.EventListener.TOUCH_ALL_AT_ONCE,
-            _touchObj: {},
-            onTouchesBegan: function(touches, event) {
-                var loc = touches[0].getLocation();
-                this._touchObj.x1 = loc.x;
-                this._touchObj.y1 = loc.y;
-            },
-            onTouchesMoved: function(touches, event) {
-                var loc = touches[0].getLocation();
-                this._touchObj.x2 = loc.x;
-                this._touchObj.y2 = loc.y;
-            },
-            onTouchesEnded: function(touches, event){
-                if (touches.length <= 0) return;
-                var x1 = this._touchObj.x1 , x2 = this._touchObj.x2 ,
-                    y1 = this._touchObj.y1 , y2 = this._touchObj.y2 ;
-
-                var dir  = Math.abs(x1 - x2) >= Math.abs(y1 - y2) ? (x1 - x2 > 0 ? 'Left' : 'Right') : (y1 - y2 < 0 ? 'Up' : 'Down')
-                _this.attack(dir);
-            }
-        }), this);
-    }
+    ,dir: -1
+    ,count: 0
     ,attack: function (dir) {
         dir = dir || 'Right' ;
         this.dir  = dir ;
@@ -59,6 +73,7 @@ var Master = cc.Layer.extend({
             ,Down: cc.p(0,-200)
             ,Left: cc.p(-200,0)
         };
+        this.count++ ;
         var _this = this ;
         _this.weapon.setVisible(1);
         _this.weapon.stopAllActions();
@@ -70,52 +85,35 @@ var Master = cc.Layer.extend({
                 _this.weapon.setVisible(0);
                 _this.weapon.setPosition(- _this.weapon.getContentSize().width/2,0);
 
-                this.status = 'done';
+                this.status = this.count >=10 ?'doneAll' : 'done';
             }, this)
         ) ) ;
     }
+    ,getAttack: function () {
+        return this.dir ;
+    }
+    ,getCount: function () {
+        return this.count ;
+    }
     ,status: 'ready'
-    ,lastStatus: ''
     ,showTips: function () {
         this.msg.setString('我要开始进攻了~')
         this.scheduleOnce(function () {
             this.msg.setString('看招~')
             this.status = 'attack'
         }, 1);
-
     }
     ,showTaunt: function () {
-        this.msg.setString('反应有点慢呢，骚年~')
+        this.msg.setString('我要进行下一次进攻了~')
         this.scheduleOnce(function () {
             this.status = 'ready'
         }, 1);
     }
-    ,update: function (dt) {
-        if (this.lastStatus === this.status) {
-            return  ;
-        }
-        this.lastStatus = this.status ;
-
-        switch(this.status) {
-            case 'ready':
-                this.showTips();
-                break;
-            case 'attack':
-                var dirs = ['Up', 'Right', 'Down', 'Left'];
-                this.attack(dirs[alexRand(0,4)]);
-                break;
-            case 'done':
-                this.showTaunt();
-                break;
-            
-            default:
-                this.showTips();
-        }
-    }
-    ,getAttack: function () {
-        return this.dir ;
+    ,doneAll: function () {
+        this.msg.setString('今天的训练结束了~')
     }
 });
+
 
 //Fisher means player, just avoid the letter "P"
 var Fish = cc.Layer.extend({
@@ -197,33 +195,16 @@ var MyScene = cc.Scene.extend({
         var bgSpr = cc.Sprite.create('bg.jpg');
         bgSpr.setPosition(size.width/2, size.height/2);
         this.addChild(bgSpr,0);
-        //var bg = cc.LayerColor.create(cc.color('#ff9900'), size.width, size.height);
-        //this.addChild(bg,0);
-        //
 
         //master
         var master = new Master();
         master.setPosition(size.width/2, size.height/2);
         this.addChild(master, 1 );
-        master.schedule(master.update, 1, null, 0.5)
 
+        //add FSM for master
+        var fsm = new FSM(master);
+        this.addChild(fsm,-1);
 
-        //blank node
-        var calNode = cc.Node.create();
-        calNode.update = function () {
-            if (fish.didAttack) {
-                fish.didAttack = 0 ;
-                var masterDir = master.getAttack();
-                if (masterDir === -2) {
-                    master.msg.setString('太迟了，骚年');
-                }else {
-                    var fishDir = fish.getAttack();
-                    master.msg.setString(masterDir === fishDir? '不错哟' : '方向都分不清吗？');
-                }
-            }
-        }
-        calNode.schedule(calNode.update, 0.1);
-        this.addChild(calNode,0);
 
         //fish
         var fish = new Fish();
@@ -233,10 +214,11 @@ var MyScene = cc.Scene.extend({
         //score
         var scorePaddingTop =  10 ;
         var scorePaddingLeft =  10 ;
-        var txtScore = cc.LabelTTF.create("Score: 11", "Arial", 21);
+        var txtScore = cc.LabelTTF.create("Score: 0", "Arial", 21);
         var txtScoreSize = txtScore.getContentSize() ;
         txtScore.setPosition(txtScoreSize.width/2 + scorePaddingLeft, size.height - txtScoreSize.height/2- scorePaddingTop);
         txtScore.setColor(cc.color('#000000'));
+        var defaultScore = 0 ;
         this.addChild(txtScore, 1);
 
 
@@ -247,6 +229,33 @@ var MyScene = cc.Scene.extend({
         txtCount.setColor(cc.color('#000000'));
         this.addChild(txtCount, 1);
 
+
+        //cal node
+        var calNode = cc.Node.create();
+        calNode.update = function () {
+            txtCount.setString('Count: ' + master.getCount());
+
+            if (fish.didAttack) {
+                fish.didAttack = 0 ;
+                var masterDir = master.getAttack();
+                if (masterDir === -1) {
+                    master.msg.setString('猴急啥？我还没出招呢');
+                }else if (masterDir === -2) {
+                    master.msg.setString('太迟了，骚年');
+                }else {
+                    var fishDir = fish.getAttack();
+                    if (masterDir === fishDir) {
+                        master.msg.setString( '不错哟' );
+                        txtScore.setString('Score: ' + (++defaultScore));
+                    }else {
+                        master.msg.setString('方向都分不清吗？');
+                        txtScore.setString('Score: ' + (defaultScore));
+                    }
+                }
+            }
+        }
+        calNode.schedule(calNode.update, 0.1);
+        this.addChild(calNode,0);
     }
 });
 
