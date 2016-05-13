@@ -16,7 +16,7 @@
 <body>   
 <canvas id="gameCanvas" width="414" height="736"></canvas>
 
-<script src="cocos2d-js-v3.10-lite.js" charset="UTF-8"></script>
+<script src="cocos2d-js-v3.10-full.js" charset="UTF-8"></script>
 <script src="main.js"></script>
 <script type="text/javascript">
     //todo 
@@ -25,7 +25,7 @@
 <script type="text/javascript">
       window.onload = function(){
           cc.game.onStart = function(){
-              cc.LoaderScene.preload(["master.png", 'fish.png'], function () {
+              cc.LoaderScene.preload(["master.png", 'fish.png', 'spineboy.json', 'spineboy.atlas'], function () {
                   cc.director.runScene(new StartScene());
               }, this);
           };

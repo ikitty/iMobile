@@ -280,10 +280,21 @@ var StartScene = cc.Scene.extend({
         txt.setColor(cc.color('#000000'))
         this.addChild(txt,1);
 
+        var spineBoy = new sp.SkeletonAnimation('spineboy.json', 'spineboy.atlas');
+        spineBoy.setPosition(cc.p(size.width / 2, size.height / 2 - 150));
+        spineBoy.setAnimation(0, 'walk', true);
+        spineBoy.setMix('walk', 'jump', 0.2);
+        spineBoy.setMix('jump', 'walk', 0.4);
+        //spineBoy.setAnimationListener(this, this.animationStateEvent);
+        this.addChild(spineBoy, 4);
+
+
+
         cc.eventManager.addListener(cc.EventListener.create({
             event: cc.EventListener.TOUCH_ALL_AT_ONCE,
             onTouchesEnded: function(touches, event){
-                cc.director.runScene(new MyScene());
+                var trans = new cc.TransitionFade(0.5, new MyScene());
+                cc.director.runScene(trans);
             }
         }), txt);
     }
