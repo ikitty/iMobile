@@ -284,9 +284,9 @@ var StartScene = cc.Scene.extend({
         spineBoy.setPosition(cc.p(size.width / 2, size.height / 2 - 150));
         spineBoy.setAnimation(0, 'walk', true);
         spineBoy.setMix('walk', 'jump', 0.2);
-        spineBoy.setMix('jump', 'walk', 0.4);
+        //spineBoy.setMix('jump', 'walk', 0.4);
         //spineBoy.setAnimationListener(this, this.animationStateEvent);
-        this.addChild(spineBoy, 4);
+        this.addChild(spineBoy, 2);
 
 
 
