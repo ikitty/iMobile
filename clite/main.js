@@ -57,7 +57,7 @@ var Master = cc.Layer.extend({
         this.addChild(weapon);
 
         //tipLayer
-        var msg = cc.LabelTTF.create("msg", "Arial", 18);
+        var msg = cc.LabelTTF.create("msg", "Microsoft Yahei", 20);
         msg.setPosition(msg.getContentSize().width/2, 150);
         msg.setColor(cc.color('#000000'))
         this.addChild(msg,1);
@@ -217,7 +217,7 @@ var MyScene = cc.Scene.extend({
         //score
         var scorePaddingTop =  10 ;
         var scorePaddingLeft =  10 ;
-        var txtScore = cc.LabelTTF.create("Score: 0", "Arial", 21);
+        var txtScore = cc.LabelTTF.create("积分: 0", "microsoft yahei", 22);
         var txtScoreSize = txtScore.getContentSize() ;
         txtScore.setPosition(txtScoreSize.width/2 + scorePaddingLeft, size.height - txtScoreSize.height/2- scorePaddingTop);
         txtScore.setColor(cc.color('#000000'));
@@ -251,10 +251,10 @@ var MyScene = cc.Scene.extend({
                     var fishDir = fish.getAttack();
                     if (masterDir === fishDir) {
                         master.msg.setString( '不错哟' );
-                        txtScore.setString('Score: ' + (++defaultScore));
+                        txtScore.setString('积分: ' + (++defaultScore));
                     }else {
                         master.msg.setString('方向都分不清吗？');
-                        txtScore.setString('Score: ' + (defaultScore));
+                        txtScore.setString('积分: ' + (defaultScore));
                     }
                 }
             }else {
@@ -282,7 +282,8 @@ var StartScene = cc.Scene.extend({
 
         var spineBoy = new sp.SkeletonAnimation('skeleton.json', 'skeleton.atlas');
         spineBoy.setPosition(cc.p(size.width / 2, size.height / 2 - 150));
-        spineBoy.setAnimation(0, 'animation', true);
+        spineBoy.setAnimation(0, 'animation', false);
+        spineBoy.setTimeScale(2);
         //spineBoy.setMix('walk', 'jump', 0.2);
         //spineBoy.setMix('jump', 'walk', 0.4);
         //spineBoy.setAnimationListener(this, this.animationStateEvent);
