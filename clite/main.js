@@ -280,10 +280,10 @@ var StartScene = cc.Scene.extend({
         txt.setColor(cc.color('#000000'))
         this.addChild(txt,1);
 
-        var spineBoy = new sp.SkeletonAnimation('spineboy.json', 'spineboy.atlas');
+        var spineBoy = new sp.SkeletonAnimation('skeleton.json', 'skeleton.atlas');
         spineBoy.setPosition(cc.p(size.width / 2, size.height / 2 - 150));
-        spineBoy.setAnimation(0, 'walk', true);
-        spineBoy.setMix('walk', 'jump', 0.2);
+        spineBoy.setAnimation(0, 'animation', true);
+        //spineBoy.setMix('walk', 'jump', 0.2);
         //spineBoy.setMix('jump', 'walk', 0.4);
         //spineBoy.setAnimationListener(this, this.animationStateEvent);
         this.addChild(spineBoy, 2);
